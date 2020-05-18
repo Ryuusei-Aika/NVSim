@@ -431,7 +431,7 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 
 
 void MemCell::CellScaling(int _targetProcessNode) {
-	if ((processNode > 0) && (processNode != _targetProcessNode))		
+	if ((processNode > 0) && (processNode != _targetProcessNode)) {		
 		double scalingFactor = (double)processNode / _targetProcessNode;
 		if (memCellType == PCRAM) {
 			resistanceOn *= scalingFactor;
@@ -486,10 +486,10 @@ double MemCell::GetMemristance(double _relativeReadVoltage) { /* Get the LRS res
 		}
 		x2 = readVoltage / 2;
 		x3 = _relativeReadVoltage * readVoltage;
-		double y1, y2 ,y3; // y1:log(read current), y2: log(leakage current at half read voltage
+		double y1, y2 ,y3; // y1: log(read current), y2: log(leakage current at half read voltage
 		y1 = log2(x1/resistanceOnAtReadVoltage);
 		y2 = log2(x2/resistanceOnAtHalfReadVoltage);
-		y3 = (y2 - y1) / (x2 -x1) * x3 + (x2 * y1 - x1 * y2) / (x2 - x1);  //insertion
+		y3 = (y2 - y1) / (x2 -x1) * x3 + (x2 * y1 - x1 * y2) / (x2 - x1);  // insertion
 		return x3 / pow(2, y3);
 	} else {  // not memristor, can't call the function
 		cout << "Warning[MemCell] : Try to get memristance from a non-memristor memory cell" << endl;

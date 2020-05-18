@@ -431,7 +431,8 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 
 
 void MemCell::CellScaling(int _targetProcessNode) {
-	if ((processNode > 0) && (processNode != _targetProcessNode)) ar		double scalingFactor = (double)processNode / _targetProcessNode;
+	if ((processNode > 0) && (processNode != _targetProcessNode))		
+		double scalingFactor = (double)processNode / _targetProcessNode;
 		if (memCellType == PCRAM) {
 			resistanceOn *= scalingFactor;
 			resistanceOff *= scalingFactor;

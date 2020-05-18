@@ -408,7 +408,7 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 
 		if (!strncmp("-FlashProgramTime", line, strlen("-FlashProgramTime"))) {
 			if (memCellType != SLCNAND && memCellType != MLCNAND)
-				cout << "Warning: The input of erase time is ignored because the memory cell is not flash." << endl;
+				cout << "Warning: The input of program time is ignored because the memory cell is not flash." << endl;
 			else {
 				sscanf(line, "-FlashProgramTime (us): %lf", &flashProgramTime);
 				flashProgramTime /= 1e6;
@@ -431,8 +431,7 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 
 
 void MemCell::CellScaling(int _targetProcessNode) {
-	if ((processNode > 0) && (processNode != _targetProcessNode)) {
-		double scalingFactor = (double)processNode / _targetProcessNode;
+	if ((processNode > 0) && (processNode != _targetProcessNode)) ar		double scalingFactor = (double)processNode / _targetProcessNode;
 		if (memCellType == PCRAM) {
 			resistanceOn *= scalingFactor;
 			resistanceOff *= scalingFactor;
@@ -476,7 +475,7 @@ void MemCell::CellScaling(int _targetProcessNode) {
 	}
 }
 
-double MemCell::GetMemristance(double _relativeReadVoltage) { /* Get the LRS resistance of memristor at log-linera region of I-V curve */
+double MemCell::GetMemristance(double _relativeReadVoltage) { /* Get the LRS resistance of memristor at log-linear region of I-V curve */
 	if (memCellType == memristor) {
 		double x1, x2, x3;  // x1: read voltage, x2: half voltage, x3: applied voltage
 		if (readVoltage == 0) {
@@ -492,7 +491,7 @@ double MemCell::GetMemristance(double _relativeReadVoltage) { /* Get the LRS res
 		y3 = (y2 - y1) / (x2 -x1) * x3 + (x2 * y1 - x1 * y2) / (x2 - x1);  //insertion
 		return x3 / pow(2, y3);
 	} else {  // not memristor, can't call the function
-		cout <<"Warning[MemCell] : Try to get memristance from a non-memristor memory cell" << endl;
+		cout << "Warning[MemCell] : Try to get memristance from a non-memristor memory cell" << endl;
 		return -1;
 	}
 }
@@ -574,7 +573,7 @@ double MemCell::CalculateReadPower() { /* TO-DO consider charge pumped read volt
 			if (readVoltage == 0) { /* Current-in voltage sensing */
 				return tech->vdd * readCurrent;
 			}
-			if (readCurrent == 0) { /*Voltage-divider sensing */
+			if (readCurrent == 0) { /* Voltage-divider sensing */
 				double resInSerialForSenseAmp, maxBitlineCurrent;
 				resInSerialForSenseAmp = sqrt(resistanceOn * resistanceOff);
 				maxBitlineCurrent = (readVoltage - voltageDropAccessDevice) / (resistanceOn + resInSerialForSenseAmp);

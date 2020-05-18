@@ -178,7 +178,7 @@ void SenseAmp::CalculatePower() {
 				leakage += 2.57e-8;
 			} else if (tech->featureSize >= 44e-9) {	/* 45nm */
 				readDynamicEnergy += 10.26e-14;
-				leakage += 4.41e-9;
+				leakage += 4.41e-8;
 			} else if (tech->featureSize >= 31e-9) {	/* 32nm */
 				readDynamicEnergy += 12.56e-14;
 				leakage += 12.54e-8;

@@ -59,7 +59,7 @@ public:
 
 	/* Properties */
 	bool initialized;	/* Initialization flag */
-	bool invalid;      /*Invalidatio flag */
+	bool invalid;      /* Invalidation flag */
 	double logicEffort;	/* The logic effort of the gate that needs this driver */
 	double inputCap;	/* Input capacitance, unit: F */
 	double outputCap;	/* Output capacitance, unit: F */

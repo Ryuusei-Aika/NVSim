@@ -92,7 +92,7 @@ public:
 	double voltageMemCellOn;   /* Voltage drop on LRS druing read operation, Unit: V */
 	double resInSerialForSenseAmp; /* Serial resistance of voltage-in voltage sensing as a voltage divider, Unit: ohm */
 	double resEquivalentOn;          /* resInSerialForSenseAmp in parallel with resMemCellOn, Unit: ohm */
-	double resEquivalentOff;          /* resInSerialForSenseAmp in parallel with resMemCellOn, Unit: ohm */
+	double resEquivalentOff;          /* resInSerialForSenseAmp in parallel with resMemCellOff, Unit: ohm */
 	double bitlineDelay;	/* Bitline delay, Unit: s */
 	double chargeLatency;	/* The bitline charge delay during write operations, Unit: s */
 	double columnDecoderLatency;	/* The worst-case mux latency, Unit: s */

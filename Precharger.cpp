@@ -80,17 +80,17 @@ void Precharger::CalculateArea() {
 		cout << "[Precharger] Error: Require initialization first!" << endl;
 	} else {
 		outputDriver.CalculateArea();
-		double hBitlinePrechareger, wBitlinePrechareger;
+		double hBitlinePrecharger, wBitlinePrecharger;
 		double hBitlineEqual, wBitlineEqual;
 		double hInverter, wInverter;
-		CalculateGateArea(INV, 1, 0, widthPMOSBitlinePrecharger, tech->featureSize*40, *tech, &hBitlinePrechareger, &wBitlinePrechareger);
+		CalculateGateArea(INV, 1, 0, widthPMOSBitlinePrecharger, tech->featureSize*40, *tech, &hBitlinePrecharger, &wBitlinePrecharger);
 		CalculateGateArea(INV, 1, 0, widthPMOSBitlineEqual, tech->featureSize*40, *tech, &hBitlineEqual, &wBitlineEqual);
 		CalculateGateArea(INV, 1, widthInvNmos, widthInvPmos, tech->featureSize*40, *tech, &hInverter, &wInverter);
-		width = 2 * wBitlinePrechareger + wBitlineEqual;
+		width = 2 * wBitlinePrecharger + wBitlineEqual;
 		width = MAX(width, wInverter);
 		width *= numColumn;
 		width = MAX(width, outputDriver.width);
-		height = MAX(hBitlinePrechareger, hBitlineEqual);
+		height = MAX(hBitlinePrecharger, hBitlineEqual);
 		height += hInverter;
 		height = MAX(height, outputDriver.height);
 		area = height * width;

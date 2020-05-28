@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 		techHigh.Initialize(32, inputParameter->deviceRoadmap);
 		alpha = (inputParameter->processNode - 22.0) / 10;
 	} else {
-		//TO-DO: technology node < 22 nm
+		// TO-DO: technology node < 22 nm
 	}
 
 	tech->InterpolateWith(techHigh, alpha);
@@ -274,12 +274,6 @@ int main(int argc, char *argv[])
 			 */
 			inputParameter->minNumRowPerSet = inputParameter->maxNumRowPerSet = 1;
 		}
-	}
-
-	/* adjust block size is it is SLC NAND flash or DRAM memory chip */
-	if (inputParameter->designTarget == RAM_chip && (cell->memCellType == SLCNAND || cell->memCellType == DRAM)) {
-		blockSize = inputParameter->pageSize;
-		associativity = 1;
 	}
 
 	INITIAL_BASIC_WIRE;
@@ -471,22 +465,6 @@ int main(int argc, char *argv[])
 
 void applyConstraint() {
 	/* Check functions that are not yet implemented */
-	if (inputParameter->designTarget == CAM_chip) {
-		cout << "[ERROR] CAM model is still under development" << endl;
-		exit(-1);
-	}
-	if (cell->memCellType == DRAM) {
-		cout << "[ERROR] DRAM model is still under development" << endl;
-		exit(-1);
-	}
-	if (cell->memCellType == eDRAM) {
-		cout << "[Warning] Embedded DRAM model is still under development" << endl;
-		//exit(-1);
-	}
-	if (cell->memCellType == MLCNAND) {
-		cout << "[ERROR] MLC NAND flash model is still under development" << endl;
-		exit(-1);
-	}
 
 	if (inputParameter->designTarget != cache && inputParameter->associativity > 1) {
 		cout << "[WARNING] Associativity setting is ignored for non-cache designs" << endl;

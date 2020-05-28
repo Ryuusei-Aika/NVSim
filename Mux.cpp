@@ -52,7 +52,7 @@ Mux::~Mux() {
 	// TODO Auto-generated destructor stub
 }
 
-void Mux::Initialize(int _numInput, long long _numMux, double _capLoad, double _capInputNextStage, double _minDriverCurrent){
+void Mux::Initialize(int _numInput, long long _numMux, double _capLoad, double _capInputNextStage, double _minDriverCurrent) {
 	if (initialized)
 		cout << "[Mux] Warning: Already initialized!" << endl;
 
@@ -64,18 +64,15 @@ void Mux::Initialize(int _numInput, long long _numMux, double _capLoad, double _
 
 	if ((numInput > 1) && (numMux > 0 )) {
 		double minNMOSWidth = minDriverCurrent / tech->currentOnNmos[inputParameter->temperature - 300];
-		if (cell->memCellType == MRAM || cell->memCellType == PCRAM || cell->memCellType == memristor) {
-			/* Mux resistance should be small enough for voltage dividing */
-			double maxResNMOSPassTransistor = cell->resistanceOn * IR_DROP_TOLERANCE;
-	    	widthNMOSPassTransistor = CalculateOnResistance(tech->featureSize, NMOS, inputParameter->temperature, *tech)
-					* tech->featureSize / maxResNMOSPassTransistor;
-	    	if (widthNMOSPassTransistor > inputParameter->maxNmosSize * tech->featureSize) {	// Change the transistor size to avoid severe IR drop
-	    		widthNMOSPassTransistor = inputParameter->maxNmosSize * tech->featureSize;
-	    	}
-			widthNMOSPassTransistor = MAX(MAX(widthNMOSPassTransistor,minNMOSWidth), 6 * MIN_NMOS_SIZE * tech->featureSize);
-		} else {
-			widthNMOSPassTransistor = MAX(6 * MIN_NMOS_SIZE * tech->featureSize, minNMOSWidth);
+		/* Mux resistance should be small enough for voltage dividing */
+		double maxResNMOSPassTransistor = cell->resistanceOn * IR_DROP_TOLERANCE;
+		widthNMOSPassTransistor = CalculateOnResistance(tech->featureSize, NMOS, inputParameter->temperature, *tech)
+				* tech->featureSize / maxResNMOSPassTransistor;
+		if (widthNMOSPassTransistor > inputParameter->maxNmosSize * tech->featureSize) {	
+			// Change the transistor size to avoid severe IR drop
+			widthNMOSPassTransistor = inputParameter->maxNmosSize * tech->featureSize;
 		}
+		widthNMOSPassTransistor = MAX(MAX(widthNMOSPassTransistor,minNMOSWidth), 6 * MIN_NMOS_SIZE * tech->featureSize);
 	}
 
 	initialized = true;

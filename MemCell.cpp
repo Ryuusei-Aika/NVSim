@@ -43,7 +43,6 @@
 
 MemCell::MemCell() {
 	// TODO Auto-generated constructor stub
-	memCellType         = PCRAM;
 	area                = 0;
 	aspectRatio         = 0;
 	resistanceOn        = 0;
@@ -52,7 +51,7 @@ MemCell::MemCell() {
 	readVoltage         = 0;
 	readCurrent         = 0;
 	readPower           = 0;
-        wordlineBoostRatio  = 1.0;
+    wordlineBoostRatio  = 1.0;
 	resetMode           = true;
 	resetVoltage        = 0;
 	resetCurrent        = 0;
@@ -74,20 +73,6 @@ MemCell::MemCell() {
 	widthAccessCMOS   = 0;
 	voltageDropAccessDevice = 0;
 	leakageCurrentAccessDevice = 0;
-	capDRAMCell		  = 0;
-	widthSRAMCellNMOS = 2.08;	/* Default NMOS width in SRAM cells is 2.08 (from CACTI) */
-	widthSRAMCellPMOS = 1.23;	/* Default PMOS width in SRAM cells is 1.23 (from CACTI) */
-
-	/*For memristors */
-	readFloating = false;
-	resistanceOnAtSetVoltage = 0;
-	resistanceOffAtSetVoltage = 0;
-	resistanceOnAtResetVoltage = 0;
-	resistanceOffAtResetVoltage = 0;
-	resistanceOnAtReadVoltage = 0;
-	resistanceOffAtReadVoltage = 0;
-	resistanceOnAtHalfReadVoltage = 0;
-	resistanceOffAtHalfReadVoltage = 0;
 }
 
 MemCell::~MemCell() {
@@ -106,28 +91,6 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 	}
 
 	while (fscanf(fp, "%[^\n]\n", line) != EOF) {
-		if (!strncmp("-MemCellType", line, strlen("-MemCellType"))) {
-			sscanf(line, "-MemCellType: %s", tmp);
-			if (!strcmp(tmp, "SRAM"))
-				memCellType = SRAM;
-			else if (!strcmp(tmp, "DRAM"))
-				memCellType = DRAM;
-			else if (!strcmp(tmp, "eDRAM"))
-				memCellType = eDRAM;
-			else if (!strcmp(tmp, "MRAM"))
-				memCellType = MRAM;
-			else if (!strcmp(tmp, "PCRAM"))
-				memCellType = PCRAM;
-			else if (!strcmp(tmp, "FBRAM"))
-				memCellType = FBRAM;
-			else if (!strcmp(tmp, "memristor"))
-				memCellType = memristor;
-			else if (!strcmp(tmp, "SLCNAND"))
-				memCellType = SLCNAND;
-			else
-				memCellType = MLCNAND;
-			continue;
-		}
 		if (!strncmp("-ProcessNode", line, strlen("-ProcessNode"))) {
 			sscanf(line, "-ProcessNode: %d", &processNode);
 			continue;
@@ -140,45 +103,6 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 			sscanf(line, "-CellAspectRatio: %lf", &aspectRatio);
 			heightInFeatureSize = sqrt(area * aspectRatio);
 			widthInFeatureSize = sqrt(area / aspectRatio);
-			continue;
-		}
-
-		if (!strncmp("-ResistanceOnAtSetVoltage", line, strlen("-ResistanceOnAtSetVoltage"))) {
-			sscanf(line, "-ResistanceOnAtSetVoltage (ohm): %lf", &resistanceOnAtSetVoltage);
-			continue;
-		}
-		if (!strncmp("-ResistanceOffAtSetVoltage", line, strlen("-ResistanceOffAtSetVoltage"))) {
-			sscanf(line, "-ResistanceOffAtSetVoltage (ohm): %lf", &resistanceOffAtSetVoltage);
-			continue;
-		}
-		if (!strncmp("-ResistanceOnAtResetVoltage", line, strlen("-ResistanceOnAtResetVoltage"))) {
-			sscanf(line, "-ResistanceOnAtResetVoltage (ohm): %lf", &resistanceOnAtResetVoltage);
-			continue;
-		}
-		if (!strncmp("-ResistanceOffAtResetVoltage", line, strlen("-ResistanceOffAtResetVoltage"))) {
-			sscanf(line, "-ResistanceOffAtResetVoltage (ohm): %lf", &resistanceOffAtResetVoltage);
-			continue;
-		}
-		if (!strncmp("-ResistanceOnAtReadVoltage", line, strlen("-ResistanceOnAtReadVoltage"))) {
-			sscanf(line, "-ResistanceOnAtReadVoltage (ohm): %lf", &resistanceOnAtReadVoltage);
-			resistanceOn = resistanceOnAtReadVoltage;
-			continue;
-		}
-		if (!strncmp("-ResistanceOffAtReadVoltage", line, strlen("-ResistanceOffAtReadVoltage"))) {
-			sscanf(line, "-ResistanceOffAtReadVoltage (ohm): %lf", &resistanceOffAtReadVoltage);
-			resistanceOff = resistanceOffAtReadVoltage;
-			continue;
-		}
-		if (!strncmp("-ResistanceOnAtHalfReadVoltage", line, strlen("-ResistanceOnAtHalfReadVoltage"))) {
-			sscanf(line, "-ResistanceOnAtHalfReadVoltage (ohm): %lf", &resistanceOnAtHalfReadVoltage);
-			continue;
-		}
-		if (!strncmp("-ResistanceOffAtHalfReadVoltage", line, strlen("-ResistanceOffAtHalfReadVoltage"))) {
-			sscanf(line, "-ResistanceOffAtHalfReadVoltage (ohm): %lf", &resistanceOffAtHalfReadVoltage);
-			continue;
-		}
-		if (!strncmp("-ResistanceOnAtHalfResetVoltage", line, strlen("-ResistanceOnAtHalfResetVoltage"))) {
-			sscanf(line, "-ResistanceOnAtHalfResetVoltage (ohm): %lf", &resistanceOnAtHalfResetVoltage);
 			continue;
 		}
 
@@ -337,93 +261,6 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 			leakageCurrentAccessDevice /= 1e6;
 			continue;
 		}
-
-		if (!strncmp("-DRAMCellCapacitance", line, strlen("-DRAMCellCapacitance"))) {
-			if (memCellType != DRAM && memCellType != eDRAM)
-				cout << "Warning: The input of DRAM cell capacitance is ignored because the memory cell is not DRAM." << endl;
-			else
-				sscanf(line, "-DRAMCellCapacitance (F): %lf", &capDRAMCell);
-			continue;
-		}
-
-		if (!strncmp("-SRAMCellNMOSWidth", line, strlen("-SRAMCellNMOSWidth"))) {
-			if (memCellType != SRAM)
-				cout << "Warning: The input of SRAM cell NMOS width is ignored because the memory cell is not SRAM." << endl;
-			else
-				sscanf(line, "-SRAMCellNMOSWidth (F): %lf", &widthSRAMCellNMOS);
-			continue;
-		}
-
-		if (!strncmp("-SRAMCellPMOSWidth", line, strlen("-SRAMCellPMOSWidth"))) {
-			if (memCellType != SRAM)
-				cout << "Warning: The input of SRAM cell PMOS width is ignored because the memory cell is not SRAM." << endl;
-			else
-				sscanf(line, "-SRAMCellPMOSWidth (F): %lf", &widthSRAMCellPMOS);
-			continue;
-		}
-
-
-		if (!strncmp("-ReadFloating", line, strlen("-ReadFloating"))) {
-			sscanf(line, "-ReadFloating: %s", tmp);
-			if (!strcmp(tmp, "true"))
-				readFloating = true;
-			else
-				readFloating = false;
-			continue;
-		}
-
-		if (!strncmp("-FlashEraseVoltage (V)", line, strlen("-FlashEraseVoltage (V)"))) {
-			if (memCellType != SLCNAND && memCellType != MLCNAND)
-				cout << "Warning: The input of programming/erase voltage is ignored because the memory cell is not flash." << endl;
-			else
-				sscanf(line, "-FlashEraseVoltage (V): %lf", &flashEraseVoltage);
-			continue;
-		}
-
-		if (!strncmp("-FlashProgramVoltage (V)", line, strlen("-FlashProgramVoltage (V)"))) {
-			if (memCellType != SLCNAND && memCellType != MLCNAND)
-				cout << "Warning: The input of programming/program voltage is ignored because the memory cell is not flash." << endl;
-			else
-				sscanf(line, "-FlashProgramVoltage (V): %lf", &flashProgramVoltage);
-			continue;
-		}
-
-		if (!strncmp("-FlashPassVoltage (V)", line, strlen("-FlashPassVoltage (V)"))) {
-			if (memCellType != SLCNAND && memCellType != MLCNAND)
-				cout << "Warning: The input of pass voltage is ignored because the memory cell is not flash." << endl;
-			else
-				sscanf(line, "-FlashPassVoltage (V): %lf", &flashPassVoltage);
-			continue;
-		}
-
-		if (!strncmp("-FlashEraseTime", line, strlen("-FlashEraseTime"))) {
-			if (memCellType != SLCNAND && memCellType != MLCNAND)
-				cout << "Warning: The input of erase time is ignored because the memory cell is not flash." << endl;
-			else {
-				sscanf(line, "-FlashEraseTime (ms): %lf", &flashEraseTime);
-				flashEraseTime /= 1e3;
-			}
-			continue;
-		}
-
-		if (!strncmp("-FlashProgramTime", line, strlen("-FlashProgramTime"))) {
-			if (memCellType != SLCNAND && memCellType != MLCNAND)
-				cout << "Warning: The input of program time is ignored because the memory cell is not flash." << endl;
-			else {
-				sscanf(line, "-FlashProgramTime (us): %lf", &flashProgramTime);
-				flashProgramTime /= 1e6;
-			}
-			continue;
-		}
-
-		if (!strncmp("-GateCouplingRatio", line, strlen("-GateCouplingRatio"))) {
-			if (memCellType != SLCNAND && memCellType != MLCNAND)
-				cout << "Warning: The input of gate coupling ratio (GCR) is ignored because the memory cell is not flash." << endl;
-			else {
-				sscanf(line, "-GateCouplingRatio: %lf", &gateCouplingRatio);
-			}
-			continue;
-		}
 	}
 
 	fclose(fp);
@@ -432,138 +269,54 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 
 void MemCell::CellScaling(int _targetProcessNode) {
 	if ((processNode > 0) && (processNode != _targetProcessNode)) {		
-		double scalingFactor = (double)processNode / _targetProcessNode;
-		if (memCellType == PCRAM) {
-			resistanceOn *= scalingFactor;
-			resistanceOff *= scalingFactor;
-			if (!setMode) {
-				setCurrent /= scalingFactor;
-			} else {
-				setVoltage *= 1;
-			}
-			if (!resetMode) {
-				resetCurrent /= scalingFactor;
-			} else {
-				resetVoltage *= 1;
-			}
-			if (accessType == diode_access) {
-				capacitanceOn /= scalingFactor; //TO-DO
-				capacitanceOff /= scalingFactor; //TO-DO
-			}
-		} else if (memCellType == MRAM){ //TO-DO: MRAM
-			resistanceOn *= scalingFactor * scalingFactor;
-			resistanceOff *= scalingFactor * scalingFactor;
-			if (!setMode) {
-				setCurrent /= scalingFactor;
-			} else {
-				setVoltage *= scalingFactor;
-			}
-			if (!resetMode) {
-				resetCurrent /= scalingFactor;
-			} else {
-				resetVoltage *= scalingFactor;
-			}
-			if (accessType == diode_access) {
-				capacitanceOn /= scalingFactor; //TO-DO
-				capacitanceOff /= scalingFactor; //TO-DO
-			}
-		} else if (memCellType == memristor) { //TO-DO: memristor
-
-		} else { //TO-DO: other RAMs
-
-		}
-		processNode = _targetProcessNode;
-	}
-}
-
-double MemCell::GetMemristance(double _relativeReadVoltage) { /* Get the LRS resistance of memristor at log-linear region of I-V curve */
-	if (memCellType == memristor) {
-		double x1, x2, x3;  // x1: read voltage, x2: half voltage, x3: applied voltage
-		if (readVoltage == 0) {
-			x1 = readCurrent * resistanceOnAtReadVoltage;
+	double scalingFactor = (double)processNode / _targetProcessNode;
+		resistanceOn *= scalingFactor * scalingFactor;
+		resistanceOff *= scalingFactor * scalingFactor;
+		if (!setMode) {
+			setCurrent /= scalingFactor;
 		} else {
-			x1 = readVoltage;
+			setVoltage *= scalingFactor;
 		}
-		x2 = readVoltage / 2;
-		x3 = _relativeReadVoltage * readVoltage;
-		double y1, y2 ,y3; // y1: log(read current), y2: log(leakage current at half read voltage
-		y1 = log2(x1/resistanceOnAtReadVoltage);
-		y2 = log2(x2/resistanceOnAtHalfReadVoltage);
-		y3 = (y2 - y1) / (x2 -x1) * x3 + (x2 * y1 - x1 * y2) / (x2 - x1);  // insertion
-		return x3 / pow(2, y3);
-	} else {  // not memristor, can't call the function
-		cout << "Warning[MemCell] : Try to get memristance from a non-memristor memory cell" << endl;
-		return -1;
+		if (!resetMode) {
+			resetCurrent /= scalingFactor;
+		} else {
+			resetVoltage *= scalingFactor;
+		}
+		if (accessType == diode_access) {
+			capacitanceOn /= scalingFactor; //TO-DO
+			capacitanceOff /= scalingFactor; //TO-DO
+		}
+	processNode = _targetProcessNode;
 	}
 }
 
 void MemCell::CalculateWriteEnergy() {
 	if (resetEnergy == 0) {
 		if (resetMode) {
-			if (memCellType == memristor)
-				if (accessType == none_access)
-					resetEnergy = fabs(resetVoltage) * (fabs(resetVoltage) - voltageDropAccessDevice) / resistanceOnAtResetVoltage * resetPulse;
-				else
-					resetEnergy = fabs(resetVoltage) * (fabs(resetVoltage) - voltageDropAccessDevice) / resistanceOn * resetPulse;
-			else if (memCellType == PCRAM)
-				resetEnergy = fabs(resetVoltage) * (fabs(resetVoltage) - voltageDropAccessDevice) / resistanceOn * resetPulse;	// PCM cells shows low resistance during most time of the switching
-			else if (memCellType == FBRAM)
-				resetEnergy = fabs(resetVoltage) * fabs(resetCurrent) * resetPulse;
-			else
-				resetEnergy = fabs(resetVoltage) * (fabs(resetVoltage) - voltageDropAccessDevice) / resistanceOn * resetPulse;
+			resetEnergy = fabs(resetVoltage) * (fabs(resetVoltage) - voltageDropAccessDevice) / resistanceOn * resetPulse;
 		} else {
-			if (resetVoltage == 0){
-				resetEnergy = tech->vdd * fabs(resetCurrent) * resetPulse; /*TO-DO consider charge pump*/
-			} else {
-				resetEnergy = fabs(resetVoltage) * fabs(resetCurrent) * resetPulse;
-			}
-			/* previous model seems to be problematic
-			if (memCellType == memristor)
-				if (accessType == none_access)
-					resetEnergy = resetCurrent * (resetCurrent * resistanceOffAtResetVoltage + voltageDropAccessDevice) * resetPulse;
-				else
-					resetEnergy = resetCurrent * (resetCurrent * resistanceOff + voltageDropAccessDevice) * resetPulse;
-			else if (memCellType == PCRAM)
-				resetEnergy = resetCurrent * (resetCurrent * resistanceOn + voltageDropAccessDevice) * resetPulse;		// PCM cells shows low resistance during most time of the switching
-			else if (memCellType == FBRAM)
-				resetEnergy = fabs(resetVoltage) * fabs(resetCurrent) * resetPulse;
-			else
-				resetEnergy = resetCurrent * (resetCurrent * resistanceOff + voltageDropAccessDevice) * resetPulse;
-		    */
+		if (resetVoltage == 0) {
+			resetEnergy = tech->vdd * fabs(resetCurrent) * resetPulse; /* TO-DO consider charge pump*/
+		} else {
+			resetEnergy = fabs(resetVoltage) * fabs(resetCurrent) * resetPulse;
+		}
+		/* previous model seems to be problematic
+		resetEnergy = resetCurrent * (resetCurrent * resistanceOff + voltageDropAccessDevice) * resetPulse;
+		*/
 		}
 	}
 	if (setEnergy == 0) {
 		if (setMode) {
-			if (memCellType == memristor)
-				if (accessType == none_access)
-					setEnergy = fabs(setVoltage) * (fabs(setVoltage) - voltageDropAccessDevice) / resistanceOnAtSetVoltage * setPulse;
-				else
-					setEnergy = fabs(setVoltage) * (fabs(setVoltage) - voltageDropAccessDevice) / resistanceOn * setPulse;
-			else if (memCellType == PCRAM)
-				setEnergy = fabs(setVoltage) * (fabs(setVoltage) - voltageDropAccessDevice) / resistanceOn * setPulse;			// PCM cells shows low resistance during most time of the switching
-			else if (memCellType == FBRAM)
-				setEnergy = fabs(setVoltage) * fabs(setCurrent) * setPulse;
-			else
-				setEnergy = fabs(setVoltage) * (fabs(setVoltage) - voltageDropAccessDevice) / resistanceOn * setPulse;
+			setEnergy = fabs(setVoltage) * (fabs(setVoltage) - voltageDropAccessDevice) / resistanceOn * setPulse;
 		} else {
-			if (resetVoltage == 0){
-				setEnergy = tech->vdd * fabs(setCurrent) * setPulse; /*TO-DO consider charge pump*/
-			} else {
-				setEnergy = fabs(setVoltage) * fabs(setCurrent) * setPulse;
-			}
-			/* previous model seems to be problematic
-			if (memCellType == memristor)
-				if (accessType == none_access)
-					setEnergy = setCurrent * (setCurrent * resistanceOffAtSetVoltage + voltageDropAccessDevice) * setPulse;
-				else
-					setEnergy = setCurrent * (setCurrent * resistanceOff + voltageDropAccessDevice) * setPulse;
-			else if (memCellType == PCRAM)
-				setEnergy = setCurrent * (setCurrent * resistanceOn + voltageDropAccessDevice) * setPulse;		// PCM cells shows low resistance during most time of the switching
-			else if (memCellType == FBRAM)
-				setEnergy = fabs(setVoltage) * fabs(setCurrent) * setPulse;
-			else
-				setEnergy = setCurrent * (setCurrent * resistanceOff + voltageDropAccessDevice) * setPulse;
-			*/
+		if (resetVoltage == 0){
+			setEnergy = tech->vdd * fabs(setCurrent) * setPulse; /*TO-DO consider charge pump*/
+		} else {
+			setEnergy = fabs(setVoltage) * fabs(setCurrent) * setPulse;
+		}
+		/* previous model seems to be problematic
+		setEnergy = setCurrent * (setCurrent * resistanceOff + voltageDropAccessDevice) * setPulse;
+		*/
 		}
 	}
 }
@@ -592,109 +345,67 @@ double MemCell::CalculateReadPower() { /* TO-DO consider charge pumped read volt
 
 void MemCell::PrintCell()
 {
-	switch (memCellType) {
-	case SRAM:
-		cout << "Memory Cell: SRAM" << endl;
-		break;
-	case DRAM:
-		cout << "Memory Cell: DRAM" << endl;
-		break;
-	case eDRAM:
-		cout << "Memory Cell: Embedded DRAM" << endl;
-		break;
-	case MRAM:
-		cout << "Memory Cell: MRAM (Magnetoresistive)" << endl;
-		break;
-	case PCRAM:
-		cout << "Memory Cell: PCRAM (Phase-Change)" << endl;
-		break;
-	case memristor:
-		cout << "Memory Cell: RRAM (Memristor)" << endl;
-		break;
-	case FBRAM:
-		cout << "Memory Cell: FBRAM (Floating Body)" <<endl;
-		break;
-	case SLCNAND:
-		cout << "Memory Cell: Single-Level Cell NAND Flash" << endl;
-		break;
-	case MLCNAND:
-		cout << "Memory Cell: Multi-Level Cell NAND Flash" << endl;
-		break;
-	default:
-		cout << "Memory Cell: Unknown" << endl;
-	}
+	cout << "Memory Cell: MRAM (Magnetoresistive)" << endl;
+		
 	cout << "Cell Area (F^2)    : " << area << " (" << heightInFeatureSize << "Fx" << widthInFeatureSize << "F)" << endl;
 	cout << "Cell Aspect Ratio  : " << aspectRatio << endl;
 
-	if (memCellType == PCRAM || memCellType == MRAM || memCellType == memristor || memCellType == FBRAM) {
-		if (resistanceOn < 1e3 )
-			cout << "Cell Turned-On Resistance : " << resistanceOn << "ohm" << endl;
-		else if (resistanceOn < 1e6)
-			cout << "Cell Turned-On Resistance : " << resistanceOn / 1e3 << "Kohm" << endl;
-		else
-			cout << "Cell Turned-On Resistance : " << resistanceOn / 1e6 << "Mohm" << endl;
-		if (resistanceOff < 1e3 )
-			cout << "Cell Turned-Off Resistance: "<< resistanceOff << "ohm" << endl;
-		else if (resistanceOff < 1e6)
-			cout << "Cell Turned-Off Resistance: "<< resistanceOff / 1e3 << "Kohm" << endl;
-		else
-			cout << "Cell Turned-Off Resistance: "<< resistanceOff / 1e6 << "Mohm" << endl;
+	if (resistanceOn < 1e3 )
+		cout << "Cell Turned-On Resistance : " << resistanceOn << "ohm" << endl;
+	else if (resistanceOn < 1e6)
+		cout << "Cell Turned-On Resistance : " << resistanceOn / 1e3 << "Kohm" << endl;
+	else
+		cout << "Cell Turned-On Resistance : " << resistanceOn / 1e6 << "Mohm" << endl;
+	if (resistanceOff < 1e3 )
+		cout << "Cell Turned-Off Resistance: "<< resistanceOff << "ohm" << endl;
+	else if (resistanceOff < 1e6)
+		cout << "Cell Turned-Off Resistance: "<< resistanceOff / 1e3 << "Kohm" << endl;
+	else
+		cout << "Cell Turned-Off Resistance: "<< resistanceOff / 1e6 << "Mohm" << endl;
 
-		if (readMode) {
-			cout << "Read Mode: Voltage-Sensing" << endl;
-			if (readCurrent > 0)
-				cout << "  - Read Current: " << readCurrent * 1e6 << "uA" << endl;
-			if (readVoltage > 0)
-				cout << "  - Read Voltage: " << readVoltage << "V" << endl;
-		} else {
-			cout << "Read Mode: Current-Sensing" << endl;
-			if (readCurrent > 0)
-				cout << "  - Read Current: " << readCurrent * 1e6 << "uA" << endl;
-			if (readVoltage > 0)
-				cout << "  - Read Voltage: " << readVoltage << "V" << endl;
-		}
+	if (readMode) {
+		cout << "Read Mode: Voltage-Sensing" << endl;
+		if (readCurrent > 0)
+			cout << "  - Read Current: " << readCurrent * 1e6 << "uA" << endl;
+		if (readVoltage > 0)
+			cout << "  - Read Voltage: " << readVoltage << "V" << endl;
+	} else {
+		cout << "Read Mode: Current-Sensing" << endl;
+		if (readCurrent > 0)
+			cout << "  - Read Current: " << readCurrent * 1e6 << "uA" << endl;
+		if (readVoltage > 0)
+			cout << "  - Read Voltage: " << readVoltage << "V" << endl;
+	}
 
-		if (resetMode) {
-			cout << "Reset Mode: Voltage" << endl;
-			cout << "  - Reset Voltage: " << resetVoltage << "V" << endl;
-		} else {
-			cout << "Reset Mode: Current" << endl;
-			cout << "  - Reset Current: " << resetCurrent * 1e6 << "uA" << endl;
-		}
-		cout << "  - Reset Pulse: " << TO_SECOND(resetPulse) << endl;
+	if (resetMode) {
+		cout << "Reset Mode: Voltage" << endl;
+		cout << "  - Reset Voltage: " << resetVoltage << "V" << endl;
+	} else {
+		cout << "Reset Mode: Current" << endl;
+		cout << "  - Reset Current: " << resetCurrent * 1e6 << "uA" << endl;
+	}
+	cout << "  - Reset Pulse: " << TO_SECOND(resetPulse) << endl;
 
-		if (setMode) {
-			cout << "Set Mode: Voltage" << endl;
-			cout << "  - Set Voltage: " << setVoltage << "V" << endl;
-		} else {
-			cout << "Set Mode: Current" << endl;
-			cout << "  - Set Current: " << setCurrent * 1e6 << "uA" << endl;
-		}
-		cout << "  - Set Pulse: " << TO_SECOND(setPulse) << endl;
+	if (setMode) {
+		cout << "Set Mode: Voltage" << endl;
+		cout << "  - Set Voltage: " << setVoltage << "V" << endl;
+	} else {
+		cout << "Set Mode: Current" << endl;
+		cout << "  - Set Current: " << setCurrent * 1e6 << "uA" << endl;
+	}
+	cout << "  - Set Pulse: " << TO_SECOND(setPulse) << endl;
 
-		switch (accessType) {
-		case CMOS_access:
-			cout << "Access Type: CMOS" << endl;
-			break;
-		case BJT_access:
-			cout << "Access Type: BJT" << endl;
-			break;
-		case diode_access:
-			cout << "Access Type: Diode" << endl;
-			break;
-		default:
-			cout << "Access Type: None Access Device" << endl;
-		}
-	} else if (memCellType == SRAM) {
-		cout << "SRAM Cell Access Transistor Width: " << widthAccessCMOS << "F" << endl;
-		cout << "SRAM Cell NMOS Width: " << widthSRAMCellNMOS << "F" << endl;
-		cout << "SRAM Cell PMOS Width: " << widthSRAMCellPMOS << "F" << endl;
-	} else if (memCellType == SLCNAND) {
-		cout << "Pass Voltage       : " << flashPassVoltage << "V" << endl;
-		cout << "Programming Voltage: " << flashProgramVoltage << "V" << endl;
-		cout << "Erase Voltage      : " << flashEraseVoltage << "V" << endl;
-		cout << "Programming Time   : " << TO_SECOND(flashProgramTime) << endl;
-		cout << "Erase Time         : " << TO_SECOND(flashEraseTime) << endl;
-		cout << "Gate Coupling Ratio: " << gateCouplingRatio << endl;
+	switch (accessType) {
+	case CMOS_access:
+		cout << "Access Type: CMOS" << endl;
+		break;
+	case BJT_access:
+		cout << "Access Type: BJT" << endl;
+		break;
+	case diode_access:
+		cout << "Access Type: Diode" << endl;
+		break;
+	default:
+		cout << "Access Type: None Access Device" << endl;
 	}
 }

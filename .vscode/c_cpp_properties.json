@@ -1,0 +1,26 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:/MingW/bin/../lib/gcc/mingw32/9.2.0/include/c++",
+                "D:/MingW/bin/../lib/gcc/mingw32/9.2.0/include/c++/mingw32",
+                "D:/MingW/bin/../lib/gcc/mingw32/9.2.0/include/c++/backward",
+                "D:/MingW/bin/../lib/gcc/mingw32/9.2.0/include",
+                "D:/MingW/bin/../lib/gcc/mingw32/9.2.0/../../../../include",
+                "D:/MingW/bin/../lib/gcc/mingw32/9.2.0/include-fixed"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "D:/MingW/bin/g++.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

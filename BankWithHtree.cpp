@@ -435,23 +435,14 @@ void BankWithHtree::Initialize(int _numRowMat, int _numColumnMat, long long _cap
 		int numWayPerRow = numWay / numRowPerSet;	/* At least 1, otherwise it is invalid, and returned already */
 		if (numWayPerRow > 1) {		/* multiple ways per row, needs extra mux level */
 			/* Do mux level recalculation to contain the multiple ways */
-			if (cell->memCellType == DRAM || cell->memCellType == eDRAM) {
-				/* for DRAM, mux before sense amp has to be 1, only mux output1 and mux output2 can be used */
-				int numWayPerRowInLog = (int)(log2((double)numWayPerRow) + 0.1);
-				int extraMuxOutputLev2 = (int)pow(2, numWayPerRowInLog / 2);
-				int extraMuxOutputLev1 = numWayPerRow / extraMuxOutputLev2;
-				muxOutputLev1 *= extraMuxOutputLev1;
-				muxOutputLev2 *= extraMuxOutputLev2;
-			} else {
-				/* for non-DRAM, all mux levels can be used */
-				int numWayPerRowInLog = (int)(log2((double)numWayPerRow) + 0.1);
-				int extraMuxOutputLev2 = (int)pow(2, numWayPerRowInLog / 3);
-				int extraMuxOutputLev1 = extraMuxOutputLev2;
-				int extraMuxSenseAmp = numWayPerRow / extraMuxOutputLev1 / extraMuxOutputLev2;
-				muxSenseAmp *= extraMuxSenseAmp;
-				muxOutputLev1 *= extraMuxOutputLev1;
-				muxOutputLev2 *= extraMuxOutputLev2;
-			}
+			/* for non-DRAM, all mux levels can be used */
+			int numWayPerRowInLog = (int)(log2((double)numWayPerRow) + 0.1);
+			int extraMuxOutputLev2 = (int)pow(2, numWayPerRowInLog / 3);
+			int extraMuxOutputLev1 = extraMuxOutputLev2;
+			int extraMuxSenseAmp = numWayPerRow / extraMuxOutputLev1 / extraMuxOutputLev2;
+			muxSenseAmp *= extraMuxSenseAmp;
+			muxOutputLev1 *= extraMuxOutputLev1;
+			muxOutputLev2 *= extraMuxOutputLev2;
 		}
 	} else if (memoryType == tag) {	/* Tag array */
 		/* numDataBroadcastBit is the tag width, numDataDistributeBit is the number of ways assigned to this mat */

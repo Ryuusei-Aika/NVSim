@@ -89,7 +89,7 @@ double CalculateWireResistance(
 
 double CalculateWireCapacitance(
 		double permittivity, double wireWidth, double wireThickness, double wireSpacing,
-		double ildThickness, double millerValue, double horizontalDielectric,
+		double ildThickness, double millarValue, double horizontalDielectric,
 		double verticalDielectic, double fringeCap);
 
 

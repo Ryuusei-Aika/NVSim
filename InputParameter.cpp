@@ -273,7 +273,7 @@ void InputParameter::ReadInputParameterFromFile(const std::string & inputFile) {
 			} else if (!strcmp(tmp, "GlobalConservative")) {
 				minLocalWireType = global_conservative;
 				maxLocalWireType = global_conservative;
-			} else {	/* no supported yet */
+			} else {	/* not supported yet */
 				minLocalWireType = dram_wordline;
 				maxLocalWireType = dram_wordline;
 			}
@@ -340,7 +340,7 @@ void InputParameter::ReadInputParameterFromFile(const std::string & inputFile) {
 			} else if (!strcmp(tmp, "GlobalConservative")) {
 				minGlobalWireType = global_conservative;
 				maxGlobalWireType = global_conservative;
-			} else {	/* no supported yet */
+			} else {	/* not supported yet */
 				minGlobalWireType = dram_wordline;
 				maxGlobalWireType = dram_wordline;
 			}

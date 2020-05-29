@@ -272,7 +272,7 @@ void Technology::Initialize(int _featureSizeInNano, DeviceRoadmap _deviceRoadmap
 			currentOffNmos[80] = 7.67e-2;
 			currentOffNmos[90] = 8.80e-2;
 			currentOffNmos[100] = 1.00e-1;
-			currentOffPmos[0] = 3.82e-2;
+			currentOffPmos[0] = 3.82e-2; 
 			currentOffPmos[10] = 3.84e-2;
 			currentOffPmos[20] = 3.87e-2;
 			currentOffPmos[30] = 3.90e-2;
@@ -493,7 +493,7 @@ void Technology::Initialize(int _featureSizeInNano, DeviceRoadmap _deviceRoadmap
 			currentOnPmos[100] = 179.5;
 			currentOffNmos[0] = 9.45e-6;
 			currentOffNmos[10] = 9.67e-6;
-			currentOffNmos[20] = 9.91e-6;
+			currentOffNmos[20] = 9.91e-6;  /* Xavier: here shouldn't be 9.91e-5 */
 			currentOffNmos[30] = 1.02e-5;
 			currentOffNmos[40] = 1.05e-5;
 			currentOffNmos[50] = 1.08e-5;
@@ -549,7 +549,7 @@ void Technology::Initialize(int _featureSizeInNano, DeviceRoadmap _deviceRoadmap
 			currentOnPmos[90] = 243.2;
 			currentOnPmos[100] = 238.3;
 			currentOffNmos[0] = 2.74e-3;
-			currentOffNmos[10] = 2.76e-3;
+			currentOffNmos[10] = 2.76e-3;  /* Xavier: here shouldn't be 2.6e-3 */
 			currentOffNmos[20] = 2.79e-3;
 			currentOffNmos[30] = 2.81e-3;
 			currentOffNmos[40] = 2.84e-3;
@@ -739,7 +739,7 @@ void Technology::Initialize(int _featureSizeInNano, DeviceRoadmap _deviceRoadmap
 			currentOffPmos[40] = 2.64e-2;
 			currentOffPmos[50] = 3.08e-2;
 			currentOffPmos[60] = 3.56e-2;
-			currentOffPmos[70] = 4.09e-2;
+			currentOffPmos[70] = 4.09e-2;  /* Xavier: here shouldn't be 1.09e-2 */
 			currentOffPmos[80] = 4.65e-2;
 			currentOffPmos[90] = 5.26e-2;
 			currentOffPmos[100] = 5.91e-2;
@@ -1273,7 +1273,7 @@ void Technology::Initialize(int _featureSizeInNano, DeviceRoadmap _deviceRoadmap
 
 	capOverlap = capIdealGate * 0.2;
 	//capSidewall = 2.5e-10;	/* Unit: F/m, this value is from CACTI, PTM model shows the value is 5e-10 */
-	double cjd = 1e-3;             /* Bottom junction capacitance, Unit: F/m^2 */
+	double cjd = 1e-3;             /* Bottom junction capacitance, Unit: F/m^2*/
 	double cjswd = 2.5e-10;           /* Isolation-edge sidewall junction capacitance, Unit: F/m */
 	double cjswgd = 0.5e-10;          /* Gate-edge sidewall junction capacitance, Unit: F/m */
 	double mjd = 0.5;             /* Bottom junction capacitance grating coefficient */
@@ -1284,8 +1284,8 @@ void Technology::Initialize(int _featureSizeInNano, DeviceRoadmap _deviceRoadmap
 	capSidewall = cjswd / pow(1 + vdd / buildInPotential, mjswd);
 	capDrainToChannel = cjswgd / pow(1 + vdd / buildInPotential, mjswgd);
 
-	vdsatNmos = phyGateLength * 1e5 /* Silicon saturatio velocity, Unit: m/s */ / effectiveElectronMobility;
-	vdsatPmos = phyGateLength * 1e5 /* Silicon saturatio velocity, Unit: m/s */ / effectiveHoleMobility;
+	vdsatNmos = phyGateLength * 1e5 /* Silicon saturation velocity, Unit: m/s */ / effectiveElectronMobility;
+	vdsatPmos = phyGateLength * 1e5 /* Silicon saturation velocity, Unit: m/s */ / effectiveHoleMobility;
 
 	/* Properties not used so far */
 	capPolywire = 0.0;	/* TO-DO: we need to find the values */

@@ -73,6 +73,9 @@ MemCell::MemCell() {
 	widthAccessCMOS   = 0;
 	voltageDropAccessDevice = 0;
 	leakageCurrentAccessDevice = 0;
+	capDRAMCell		  = 0;
+	widthSRAMCellNMOS = 2.08;	/* Default NMOS width in SRAM cells is 2.08 (from CACTI) */
+	widthSRAMCellPMOS = 1.23;	/* Default PMOS width in SRAM cells is 1.23 (from CACTI) */
 }
 
 MemCell::~MemCell() {
@@ -268,8 +271,8 @@ void MemCell::ReadCellFromFile(const string & inputFile)
 
 
 void MemCell::CellScaling(int _targetProcessNode) {
-	if ((processNode > 0) && (processNode != _targetProcessNode)) {		
-	double scalingFactor = (double)processNode / _targetProcessNode;
+	if ((processNode > 0) && (processNode != _targetProcessNode)) {
+		double scalingFactor = (double)processNode / _targetProcessNode; //TO-DO: MRAM
 		resistanceOn *= scalingFactor * scalingFactor;
 		resistanceOff *= scalingFactor * scalingFactor;
 		if (!setMode) {
@@ -286,7 +289,8 @@ void MemCell::CellScaling(int _targetProcessNode) {
 			capacitanceOn /= scalingFactor; //TO-DO
 			capacitanceOff /= scalingFactor; //TO-DO
 		}
-	processNode = _targetProcessNode;
+		
+		processNode = _targetProcessNode;
 	}
 }
 
@@ -295,28 +299,48 @@ void MemCell::CalculateWriteEnergy() {
 		if (resetMode) {
 			resetEnergy = fabs(resetVoltage) * (fabs(resetVoltage) - voltageDropAccessDevice) / resistanceOn * resetPulse;
 		} else {
-		if (resetVoltage == 0) {
-			resetEnergy = tech->vdd * fabs(resetCurrent) * resetPulse; /* TO-DO consider charge pump*/
-		} else {
-			resetEnergy = fabs(resetVoltage) * fabs(resetCurrent) * resetPulse;
-		}
-		/* previous model seems to be problematic
-		resetEnergy = resetCurrent * (resetCurrent * resistanceOff + voltageDropAccessDevice) * resetPulse;
-		*/
+			if (resetVoltage == 0){
+				resetEnergy = tech->vdd * fabs(resetCurrent) * resetPulse; /*TO-DO consider charge pump*/
+			} else {
+				resetEnergy = fabs(resetVoltage) * fabs(resetCurrent) * resetPulse;
+			}
+			/* previous model seems to be problematic
+			if (memCellType == memristor)
+				if (accessType == none_access)
+					resetEnergy = resetCurrent * (resetCurrent * resistanceOffAtResetVoltage + voltageDropAccessDevice) * resetPulse;
+				else
+					resetEnergy = resetCurrent * (resetCurrent * resistanceOff + voltageDropAccessDevice) * resetPulse;
+			else if (memCellType == PCRAM)
+				resetEnergy = resetCurrent * (resetCurrent * resistanceOn + voltageDropAccessDevice) * resetPulse;		// PCM cells shows low resistance during most time of the switching
+			else if (memCellType == FBRAM)
+				resetEnergy = fabs(resetVoltage) * fabs(resetCurrent) * resetPulse;
+			else
+				resetEnergy = resetCurrent * (resetCurrent * resistanceOff + voltageDropAccessDevice) * resetPulse;
+		    */
 		}
 	}
 	if (setEnergy == 0) {
 		if (setMode) {
 			setEnergy = fabs(setVoltage) * (fabs(setVoltage) - voltageDropAccessDevice) / resistanceOn * setPulse;
 		} else {
-		if (resetVoltage == 0){
-			setEnergy = tech->vdd * fabs(setCurrent) * setPulse; /*TO-DO consider charge pump*/
-		} else {
-			setEnergy = fabs(setVoltage) * fabs(setCurrent) * setPulse;
-		}
-		/* previous model seems to be problematic
-		setEnergy = setCurrent * (setCurrent * resistanceOff + voltageDropAccessDevice) * setPulse;
-		*/
+			if (resetVoltage == 0){
+				setEnergy = tech->vdd * fabs(setCurrent) * setPulse; /*TO-DO consider charge pump*/
+			} else {
+				setEnergy = fabs(setVoltage) * fabs(setCurrent) * setPulse;
+			}
+			/* previous model seems to be problematic
+			if (memCellType == memristor)
+				if (accessType == none_access)
+					setEnergy = setCurrent * (setCurrent * resistanceOffAtSetVoltage + voltageDropAccessDevice) * setPulse;
+				else
+					setEnergy = setCurrent * (setCurrent * resistanceOff + voltageDropAccessDevice) * setPulse;
+			else if (memCellType == PCRAM)
+				setEnergy = setCurrent * (setCurrent * resistanceOn + voltageDropAccessDevice) * setPulse;		// PCM cells shows low resistance during most time of the switching
+			else if (memCellType == FBRAM)
+				setEnergy = fabs(setVoltage) * fabs(setCurrent) * setPulse;
+			else
+				setEnergy = setCurrent * (setCurrent * resistanceOff + voltageDropAccessDevice) * setPulse;
+			*/
 		}
 	}
 }
@@ -327,7 +351,7 @@ double MemCell::CalculateReadPower() { /* TO-DO consider charge pumped read volt
 			if (readVoltage == 0) { /* Current-in voltage sensing */
 				return tech->vdd * readCurrent;
 			}
-			if (readCurrent == 0) { /* Voltage-divider sensing */
+			if (readCurrent == 0) { /*Voltage-divider sensing */
 				double resInSerialForSenseAmp, maxBitlineCurrent;
 				resInSerialForSenseAmp = sqrt(resistanceOn * resistanceOff);
 				maxBitlineCurrent = (readVoltage - voltageDropAccessDevice) / (resistanceOn + resInSerialForSenseAmp);
@@ -346,7 +370,7 @@ double MemCell::CalculateReadPower() { /* TO-DO consider charge pumped read volt
 void MemCell::PrintCell()
 {
 	cout << "Memory Cell: MRAM (Magnetoresistive)" << endl;
-		
+
 	cout << "Cell Area (F^2)    : " << area << " (" << heightInFeatureSize << "Fx" << widthInFeatureSize << "F)" << endl;
 	cout << "Cell Aspect Ratio  : " << aspectRatio << endl;
 
@@ -408,4 +432,5 @@ void MemCell::PrintCell()
 	default:
 		cout << "Access Type: None Access Device" << endl;
 	}
+	
 }

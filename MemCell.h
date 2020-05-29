@@ -94,6 +94,9 @@ public:
 	double widthAccessCMOS;	/* The gate width of CMOS access transistor, Unit: F */
 	double voltageDropAccessDevice;  /* The voltage drop on the access device, Unit: V */
 	double leakageCurrentAccessDevice;  /* Reverse current of access device, Unit: uA */
+	double capDRAMCell;		/* The DRAM cell capacitance if the memory cell is DRAM, Unit: F */
+	double widthSRAMCellNMOS;	/* The gate width of NMOS in SRAM cells, Unit: F */
+	double widthSRAMCellPMOS;	/* The gate width of PMOS in SRAM cells, Unit: F */
 };
 
 #endif /* MEMCELL_H_ */

@@ -1,0 +1,30 @@
+//Ikeda (2010) PMA-MTJ, Cell = 150 x 150nm (40 x 40nm not supported because of NMOS folding issue),
+//TMR = 100%, switching current = 49uA (for 40 x 40nm).
+//Assume the cell shape is square (circular not supported here)
+
+-MemCellType: MRAM
+
+-CellArea (F^2): 8
+-CellAspectRatio: 1
+
+-ResistanceOn (ohm): 4000
+-ResistanceOff (ohm): 8000
+
+-ReadMode: current
+-ReadVoltage (V): 0.25
+//-MinSenseVoltage (mV): 25
+//-ReadPower (uW): 299
+
+-ResetMode: current
+-ResetCurrent (uA): 49
+-ResetPulse (ns): 10
+//-ResetEnergy (pJ): 12.8
+
+-SetMode: current
+-SetCurrent (uA): 49
+-SetPulse (ns): 10
+//-SetEnergy (pJ): 11.2
+
+-AccessType: CMOS
+-VoltageDropAccessDevice (V): 0.15
+-AccessCMOSWidth (F): 5.45

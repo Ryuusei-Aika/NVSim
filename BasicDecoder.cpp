@@ -69,7 +69,7 @@ void BasicDecoder::Initialize(int _numAddressBit, double _capLoad, double _resLo
 		double capInv = CalculateGateCap(widthInvN, *tech) + CalculateGateCap(widthInvP, *tech);
 		outputDriver.Initialize(logicEffortInv, capInv, capLoad, resLoad, true, latency_first, 0);  /* Always Latency First */
 	}
-	else {
+	else{
 		double logicEffortNand;
 		double capNand;
 		if (numNandInput == 2) {	/* NAND2 */

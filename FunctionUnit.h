@@ -58,7 +58,7 @@ public:
 	double readDynamicEnergy, writeDynamicEnergy;	/* Unit: J */
 	double leakage;		/* Unit: W */
 
-	/* Optional properties (not valid for all the memory cells */
+	/* Optional properties (not valid for all the memory cells) */
 	double setLatency, resetLatency;				/* Unit: s */
 	double setDynamicEnergy, resetDynamicEnergy;	/* Unit: J */
 	double cellReadEnergy, cellSetEnergy, cellResetEnergy;			/* Unit: J */

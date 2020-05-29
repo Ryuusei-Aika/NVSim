@@ -331,7 +331,6 @@ void Result::print() {
 	cout << "       |--- Precharge Latency   = " << TO_SECOND(bank->mat.subarray.precharger.readLatency) << endl;
 	if (bank->mat.memoryType == tag && bank->mat.internalSenseAmp)
 		cout << "    |--- Comparator Latency  = " << TO_SECOND(bank->mat.comparator.readLatency) << endl;
-
 	cout << " - Write Latency = " << TO_SECOND(bank->writeLatency) << endl;
 	if (inputParameter->routingMode == h_tree)
 		cout << " |--- H-Tree Latency = " << TO_SECOND(bank->writeLatency - bank->mat.writeLatency) << endl;
@@ -372,6 +371,7 @@ void Result::print() {
 	cout << "       |--- Mux Decoder Dynamic Energy = " << TO_JOULE(bank->mat.subarray.bitlineMuxDecoder.readDynamicEnergy
 													+ bank->mat.subarray.senseAmpMuxLev1Decoder.readDynamicEnergy
 													+ bank->mat.subarray.senseAmpMuxLev2Decoder.readDynamicEnergy) << endl;
+	cout << "       |--- Bitline & Cell Read Energy = " << TO_JOULE(bank->mat.subarray.cellReadEnergy) << endl;
 	if (inputParameter->internalSensing)
 		cout << "       |--- Senseamp Dynamic Energy    = " << TO_JOULE(bank->mat.subarray.senseAmp.readDynamicEnergy) << endl;
 	cout << "       |--- Mux Dynamic Energy         = " << TO_JOULE(bank->mat.subarray.bitlineMux.readDynamicEnergy

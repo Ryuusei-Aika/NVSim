@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 		techHigh.Initialize(32, inputParameter->deviceRoadmap);
 		alpha = (inputParameter->processNode - 22.0) / 10;
 	} else {
-		// TO-DO: technology node < 22 nm
+		//TO-DO: technology node < 22 nm
 	}
 
 	tech->InterpolateWith(techHigh, alpha);
@@ -465,6 +465,10 @@ int main(int argc, char *argv[])
 
 void applyConstraint() {
 	/* Check functions that are not yet implemented */
+	if (inputParameter->designTarget == CAM_chip) {
+		cout << "[ERROR] CAM model is still under development" << endl;
+		exit(-1);
+	}
 
 	if (inputParameter->designTarget != cache && inputParameter->associativity > 1) {
 		cout << "[WARNING] Associativity setting is ignored for non-cache designs" << endl;

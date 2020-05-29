@@ -74,7 +74,7 @@ public:
 	double horizontalDielectric;	/* Unit: 1 */
 	double wirePitch;				/* Unit: m */
 	double aspectRatio;				/* Unit: 1 */
-	double ildThickness;			/* Unit: m */
+	double ildThickness;			/* Unit: m, ild = inter-level dielectric */
 	double wireWidth;				/* Unit: m */
 	double wireThickness;			/* Unit: m */
 	double wireSpacing;				/* Unit: m */

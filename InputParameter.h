@@ -71,7 +71,7 @@ public:
 	double readDynamicEnergyConstraint;		/* The allowed variation to the best read dynamic energy */
 	double writeDynamicEnergyConstraint;	/* The allowed variation to the best write dynamic energy */
 	double leakageConstraint;		/* The allowed variation to the best leakage energy */
-	double areaConstraint;			/* The allowed variation to the best leakage energy */
+	double areaConstraint;			/* The allowed variation to the best area */
 	double readEdpConstraint;		/* The allowed variation to the best read EDP */
 	double writeEdpConstraint;		/* The allowed variation to the best write EDP */
 	bool isConstraintApplied;		/* If any design constraint is applied */

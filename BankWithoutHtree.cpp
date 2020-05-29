@@ -349,7 +349,7 @@ void BankWithoutHtree::CalculateLatencyAndPower() {
 							resLocalBitline += cell->resistanceOff - cell->resistanceOn;
 							tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
 							latencyOff = tau * log((vOff - vPre)/(vOff - vPre - globalSenseAmp.senseVoltage));
-						} else {   /*Voltage-in voltage sensing */
+						} else {   /* Voltage-in voltage sensing */
 							resLocalBitline += mat.subarray.resEquivalentOn;
 							tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
 							latencyOn = tau * log((vPre - vOn)/(vPre - vOn - globalSenseAmp.senseVoltage));
@@ -364,7 +364,7 @@ void BankWithoutHtree::CalculateLatencyAndPower() {
 							readLatency += latencyOff + mat.subarray.bitlineDelayOff;
 					}
 				}
-				if (i <  numActiveMatPerColumn) {
+				if (i < numActiveMatPerColumn) {
 					energy = capGlobalBitline * tech->vdd * tech->vdd * numAddressBitRouteToMat;
 					readDynamicEnergy += energy;
 					writeDynamicEnergy += energy;

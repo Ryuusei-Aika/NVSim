@@ -80,7 +80,7 @@ void SubArray::Initialize(long long _numRow, long long _numColumn, bool _multipl
 		}
 	}
 
-	if (cell->accessType == CMOS_access) {
+	if (cell->accessType == CMOS_access){
 		if (tech->currentOnNmos[inputParameter->temperature - 300]
 								/ tech->currentOffNmos[inputParameter->temperature - 300] < numRow / BITLINE_LEAKAGE_TOLERANCE) {
 			/* bitline too long */
@@ -146,7 +146,7 @@ void SubArray::Initialize(long long _numRow, long long _numColumn, bool _multipl
 	if (internalSenseAmp) {
 		voltageSense = cell->readMode;
 	}
-
+	
 	/* TO-DO: different memory technology might have different values here */
 	senseVoltage = cell->minSenseVoltage;
 
@@ -200,7 +200,6 @@ void SubArray::Initialize(long long _numRow, long long _numColumn, bool _multipl
 		capWordline += MAX(cell->capacitanceOff, cell->capacitanceOn) * numColumn;  //TO-DO: choose the right capacitance
 		capBitline += MAX(cell->capacitanceOff, cell->capacitanceOn) * numRow;      //TO-DO: choose the right capacitance
 	}
-
 	resMemCellOff = resCellAccess + cell->resistanceOff;
 	resMemCellOn = resCellAccess + cell->resistanceOn;
 	if (cell->readMode) {						/* voltage-sensing */
@@ -229,6 +228,7 @@ void SubArray::Initialize(long long _numRow, long long _numColumn, bool _multipl
 			}
 		}
 	}
+	
 
 	/* Initialize sub-component */
 
@@ -379,7 +379,7 @@ void SubArray::CalculateLatency(double _rampInput) {
 				senseAmpMuxLev1.resNMOSPassTransistor + senseAmpMuxLev2.resNMOSPassTransistor;
 		double tauChargeLatency = resPassTransistor * (capPassTransistor + capBitline) + resBitline * capBitline / 2;
 		chargeLatency = horowitz(tauChargeLatency, 0, 1e20, NULL);
-
+		
 		double bitlineRamp = 0;
 		if (cell->readMode == false) {	/* current-sensing */
 			/* Use ICCAD 2009 model */
@@ -417,19 +417,19 @@ void SubArray::CalculateLatency(double _rampInput) {
 		readLatency = decoderLatency + bitlineDelay + bitlineMux.readLatency + senseAmp.readLatency
 				+ senseAmpMuxLev1.readLatency + senseAmpMuxLev2.readLatency;
 
-		if (cell->accessType == diode_access || cell->accessType == none_access) {
-			if (inputParameter->writeScheme == erase_before_reset || inputParameter->writeScheme == erase_before_set)
-				writeLatency = MAX(rowDecoder.writeLatency, chargeLatency);
-			else
+			if (cell->accessType == diode_access || cell->accessType == none_access) {
+				if (inputParameter->writeScheme == erase_before_reset || inputParameter->writeScheme == erase_before_set)
+					writeLatency = MAX(rowDecoder.writeLatency, chargeLatency);
+				else
+					writeLatency = MAX(rowDecoder.writeLatency, columnDecoderLatency + chargeLatency);
+				writeLatency += chargeLatency;
+				writeLatency += cell->resetPulse + cell->setPulse;
+			} else { // CMOS or Bipolar access
 				writeLatency = MAX(rowDecoder.writeLatency, columnDecoderLatency + chargeLatency);
-			writeLatency += chargeLatency;
-			writeLatency += cell->resetPulse + cell->setPulse;
-		} else { // CMOS or Bipolar access
-			writeLatency = MAX(rowDecoder.writeLatency, columnDecoderLatency + chargeLatency);
-			resetLatency = writeLatency + cell->resetPulse;
-			setLatency = writeLatency + cell->setPulse;
-			writeLatency += MAX(cell->resetPulse, cell->setPulse);
-		}
+				resetLatency = writeLatency + cell->resetPulse;
+				setLatency = writeLatency + cell->setPulse;
+				writeLatency += MAX(cell->resetPulse, cell->setPulse);
+			}
 	}
 }
 
@@ -451,6 +451,7 @@ void SubArray::CalculatePower() {
 		senseAmpMuxLev1.CalculatePower();
 		senseAmpMuxLev2.CalculatePower();
 
+		
 		if (cell->readMode == false) {	/* current-sensing */
 			/* Use ICCAD 2009 model */
 			double resBitlineMux = bitlineMux.resNMOSPassTransistor;
@@ -503,8 +504,8 @@ void SubArray::CalculatePower() {
 		cellResetEnergy /= SHAPER_EFFICIENCY_AGGRESSIVE;
 		cellSetEnergy /= SHAPER_EFFICIENCY_AGGRESSIVE;  /* Due to the shaper inefficiency */
 		writeDynamicEnergy /= SHAPER_EFFICIENCY_AGGRESSIVE;
-
-		leakage = 0;                       // TO-DO: cell leaks during read/write operation
+		leakage = 0;                       //TO-DO: cell leaks during read/write operation
+		
 
 		if (inputParameter->designTarget == cache && inputParameter->cacheAccessMode != sequential_access_mode) {
 			cellResetEnergy /= inputParameter->associativity;

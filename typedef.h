@@ -38,7 +38,7 @@
 #ifndef TYPEDEF_H_
 #define TYPEDEF_H_
 
-enum MemCellType
+/* enum MemCellType
 {
 	SRAM,
 	DRAM,
@@ -49,7 +49,8 @@ enum MemCellType
 	FBRAM,
 	SLCNAND,
 	MLCNAND
-};
+}; */
+
 enum CellAccessType
 {
 	CMOS_access,

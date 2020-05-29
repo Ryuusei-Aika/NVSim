@@ -177,7 +177,7 @@ void CalculateGateCapacitance(
 			heightDrainP = widthPMOS;
 		} else {	/* Folding */
 			if (maxWidthPMOS < 3 * tech.featureSize) {
-				cout << "Error: Unable to do PMOS folding because PMOS size limitation is less than 3F!" <<endl;
+				cout << "Error: Unable to do PMOS folding because PMOS size limitation is less than 3F!" << endl;
 				exit(-1);
 			}
 			numFoldedPMOS = (int)(ceil(widthPMOS / (maxWidthPMOS - 3 * tech.featureSize)));	/* 3F for folding overhead */
@@ -251,7 +251,7 @@ void CalculateGateCapacitance(
 	if (numFoldedPMOS % 2 == 0)
 		capDrainSidewallP = 2 * widthDrainP * tech.capSidewall;
 	else
-		capDrainSidewallP = (2* widthDrainP + heightDrainP) * tech.capSidewall;
+		capDrainSidewallP = (2 * widthDrainP + heightDrainP) * tech.capSidewall;
 
 	/* Drain to channel capacitance */
 	double capDrainToChannelN = numFoldedNMOS * heightDrainN * tech.capDrainToChannel;

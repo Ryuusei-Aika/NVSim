@@ -76,6 +76,12 @@
 #define W_SENSE_ISO		12.5
 #define W_SENSE_EN		5.0
 #define W_SENSE_MUX		9.0
+/* Qing: new SA parameters */
+#define W_SA_TOP		40
+#define W_SA_P          2
+#define W_SA_N  		2
+#define W_SA_BOT		20
+
 #define VBITSENSEMIN	0.08
 #define IV_CONVERTER_AREA 50000 /*TO-DO: technology and design dependent parameter, 649606 is used in PCRAMSim*/
 
@@ -96,7 +102,7 @@
 #define RES_ADJ 8.6
 #define VOL_SWING .1
 
-#define CONSTRAINT_ASPECT_RATIO_BANK	10	
+#define CONSTRAINT_ASPECT_RATIO_BANK	10
 
 #define BITLINE_LEAKAGE_TOLERANCE	1
 #define IR_DROP_TOLERANCE 			0.2

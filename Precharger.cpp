@@ -102,7 +102,7 @@ void Precharger::CalculateRC() {
 		cout << "[Precharger] Error: Require initialization first!" << endl;
 	} else {
 		outputDriver.CalculateRC();
-		//more accurate RC model would include drain Capacitances of Precharger and Equalization PMOS transistors
+		//TO-DO more accurate RC model would include drain Capacitances of Precharger and Equalization PMOS transistors
 	}
 }
 

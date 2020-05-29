@@ -273,7 +273,7 @@ void InputParameter::ReadInputParameterFromFile(const std::string & inputFile) {
 			} else if (!strcmp(tmp, "GlobalConservative")) {
 				minLocalWireType = global_conservative;
 				maxLocalWireType = global_conservative;
-			} else {	/* no supported yet */
+			} else {	/* not supported yet */
 				minLocalWireType = dram_wordline;
 				maxLocalWireType = dram_wordline;
 			}
@@ -340,7 +340,7 @@ void InputParameter::ReadInputParameterFromFile(const std::string & inputFile) {
 			} else if (!strcmp(tmp, "GlobalConservative")) {
 				minGlobalWireType = global_conservative;
 				maxGlobalWireType = global_conservative;
-			} else {	/* no supported yet */
+			} else {	/* not supported yet */
 				minGlobalWireType = dram_wordline;
 				maxGlobalWireType = dram_wordline;
 			}
@@ -593,10 +593,6 @@ void InputParameter::PrintInputParameter() {
 			cout << " (" << wordWidth / 8 << "Bytes)" << endl;
 		else
 			cout << endl;
-	}
-	if (designTarget == RAM_chip && (cell->memCellType == SLCNAND || cell->memCellType == MLCNAND)) {
-		cout << "Page Size  : " << pageSize / 8 << "Bytes" << endl;
-		cout << "Block Size : " << flashBlockSize / 8 / 1024 << "KB" << endl;
 	}
 	// TO-DO: tedious work here!!!
 

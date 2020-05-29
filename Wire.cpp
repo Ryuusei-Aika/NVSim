@@ -521,7 +521,7 @@ void Wire::Initialize(int _featureSizeInNano, WireType _wireType, WireRepeaterTy
 		repeatedWirePitch = wirePitch + repeaterWidth;
 	}
 
-	initialized =true;
+	initialized = true;
 }
 
 
@@ -640,7 +640,7 @@ void Wire::CalculateLatencyAndPower(double _wireLength, double *delay, double *d
 				resPullDown = CalculateOnResistance(widthNmosDriver, NMOS, inputParameter->temperature, *tech);
 				gm = CalculateTransconductance(widthNmosDriver, NMOS, *tech);
 				beta = 1 / (resPullDown * gm);
-				tr = resPullDown * RES_ADJ *(capWire + drainCapDriver * 2) + capWire * resWire / 2 + (resPullDown + resWire) * senseAmp->capLoad;
+				tr = resPullDown * RES_ADJ * (capWire + drainCapDriver * 2) + capWire * resWire / 2 + (resPullDown + resWire) * senseAmp->capLoad;
 				if (delay)
 					*(delay) += horowitz(tr, beta, rampInput, &temp); //TO-DO: inconsistent with Cacti 6.5
 				if (dynamicEnergy) {
@@ -789,7 +789,7 @@ void Wire::PrintProperty() {
 		cout << "Repeater Spacing: " << repeaterSpacing * 1e3 << "mm" <<endl;
 		cout << "Delay: " << getRepeatedWireUnitDelay() * 1e6 << "ns/mm" <<endl;
 		cout << "Dynamic Energy: " << getRepeatedWireUnitDynamicEnergy() * 1e6 << "nJ/mm" <<endl;
-	    cout << "Subtheshold Leakage Power: " << getRepeatedWireUnitLeakage() << "mW/mm" << endl;
+	    cout << "Subthreshold Leakage Power: " << getRepeatedWireUnitLeakage() << "mW/mm" << endl;
 	}
 }
 

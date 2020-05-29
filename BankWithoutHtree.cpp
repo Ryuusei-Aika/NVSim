@@ -64,11 +64,7 @@ void BankWithoutHtree::Initialize(int _numRowMat, int _numColumnMat, long long _
 	}
 
 	if (!_internalSenseAmp) {
-		if (cell->memCellType == DRAM || cell->memCellType == eDRAM) {
-			invalid = true;
-			cout << "[BankWithoutHtree] Error: DRAM does not support external sense amplification!" << endl;
-			return;
-		} else if (globalWire->wireRepeaterType != repeated_none) {
+		if (globalWire->wireRepeaterType != repeated_none) {
 			invalid = true;
 			initialized = true;
 			return;
@@ -88,7 +84,7 @@ void BankWithoutHtree::Initialize(int _numRowMat, int _numColumnMat, long long _
 
 	/* Calculate the physical signals that are required in routing */
 	numAddressBit = (int)(log2((double)capacity / blockSize / associativity) + 0.1);
-			/* use double during the calculation to avoid overflow */
+	/* use double during the calculation to avoid overflow */
 
 	if (_numActiveMatPerRow > numColumnMat) {
 		cout << "[Bank] Warning: The number of active subarray per row is larger than the number of subarray per row!"  << endl;
@@ -143,23 +139,14 @@ void BankWithoutHtree::Initialize(int _numRowMat, int _numColumnMat, long long _
 		int numWayPerRow = numWay / numRowPerSet;	/* At least 1, otherwise it is invalid, and returned already */
 		if (numWayPerRow > 1) {		/* multiple ways per row, needs extra mux level */
 			/* Do mux level recalculation to contain the multiple ways */
-			if (cell->memCellType == DRAM || cell->memCellType == eDRAM) {
-				/* for DRAM, mux before sense amp has to be 1, only mux output1 and mux output2 can be used */
-				int numWayPerRowInLog = (int)(log2((double)numWayPerRow) + 0.1);
-				int extraMuxOutputLev2 = (int)pow(2, numWayPerRowInLog / 2);
-				int extraMuxOutputLev1 = numWayPerRow / extraMuxOutputLev2;
-				muxOutputLev1 *= extraMuxOutputLev1;
-				muxOutputLev2 *= extraMuxOutputLev2;
-			} else {
-				/* for non-DRAM, all mux levels can be used */
-				int numWayPerRowInLog = (int)(log2((double)numWayPerRow) + 0.1);
-				int extraMuxOutputLev2 = (int)pow(2, numWayPerRowInLog / 3);
-				int extraMuxOutputLev1 = extraMuxOutputLev2;
-				int extraMuxSenseAmp = numWayPerRow / extraMuxOutputLev1 / extraMuxOutputLev2;
-				muxSenseAmp *= extraMuxSenseAmp;
-				muxOutputLev1 *= extraMuxOutputLev1;
-				muxOutputLev2 *= extraMuxOutputLev2;
-			}
+			/* for non-DRAM, all mux levels can be used */
+			int numWayPerRowInLog = (int)(log2((double)numWayPerRow) + 0.1);
+			int extraMuxOutputLev2 = (int)pow(2, numWayPerRowInLog / 3);
+			int extraMuxOutputLev1 = extraMuxOutputLev2;
+			int extraMuxSenseAmp = numWayPerRow / extraMuxOutputLev1 / extraMuxOutputLev2;
+			muxSenseAmp *= extraMuxSenseAmp;
+			muxOutputLev1 *= extraMuxOutputLev1;
+			muxOutputLev2 *= extraMuxOutputLev2;
 		}
 	} else if (memoryType == tag) { /* Tag array */
 		if (numRowPerSet > 1) {
@@ -198,14 +185,7 @@ void BankWithoutHtree::Initialize(int _numRowMat, int _numColumnMat, long long _
 		bool voltageSense = true;
 		double senseVoltage;
 		senseVoltage = cell->minSenseVoltage;
-		if (cell->memCellType == SRAM) {
-			/* SRAM, DRAM, and eDRAM all use voltage sensing */
-			voltageSense = true;
-		} else if (cell->memCellType == MRAM || cell->memCellType == PCRAM || cell->memCellType == memristor || cell->memCellType == FBRAM) {
-			voltageSense = cell->readMode;
-		} else {/* NAND flash */
-			// TO-DO
-		}
+		voltageSense = cell->readMode;
 
 		int numSenseAmp;
 		if (memoryType == data)
@@ -342,80 +322,57 @@ void BankWithoutHtree::CalculateLatencyAndPower() {
 				double resGlobalBitline, capGlobalBitline;
 				resGlobalBitline = lengthWire * globalWire->resWirePerUnit;
 				capGlobalBitline = lengthWire * globalWire->capWirePerUnit;
-				double capGlobalBitlineMux;
-				capGlobalBitlineMux = globalBitlineMux.capForPreviousDelayCalculation;
-				if (cell->memCellType == SRAM) {
-					double vpre = cell->readVoltage;	/* This value should be equal to resetVoltage and setVoltage for SRAM */
-					if (i == 0) {
-						latency = resLocalBitline * capGlobalBitline / 2 +
-								(resLocalBitline + resGlobalBitline) * (capGlobalBitline / 2 + capGlobalBitlineMux);
-						latency *= log(vpre / (vpre - globalSenseAmp.senseVoltage));
-						latency += resLocalBitline * capGlobalBitline / 2;
-						globalBitlineMux.CalculateLatency(1e20);
-						latency += globalBitlineMux.readLatency;
-						globalSenseAmp.CalculateLatency(1e20);
-						writeLatency += latency;
-						latency += globalSenseAmp.readLatency;
-						readLatency += latency;
-					}
-					if (i <  numActiveMatPerColumn) {
-						energy = capGlobalBitline * tech->vdd * tech->vdd * numAddressBitRouteToMat;
-						readDynamicEnergy += energy;
-						writeDynamicEnergy += energy;
-						readDynamicEnergy += capGlobalBitline * vpre * vpre * numWay;
-						writeDynamicEnergy += capGlobalBitline * vpre * vpre * numDataBitRouteToMat;
-					}
-				} else if (cell->memCellType == MRAM || cell->memCellType == PCRAM || cell->memCellType == memristor || cell->memCellType == FBRAM) {
-					double vWrite = MAX(fabs(cell->resetVoltage), fabs(cell->setVoltage));
-					double tau, latencyOff, latencyOn;
-					double vPre = mat.subarray.voltagePrecharge;
-					double vOn = mat.subarray.voltageMemCellOn;
-					double vOff = mat.subarray.voltageMemCellOff;
-					if (i == 0) {
-						tau = resBitlineMux * capGlobalBitline / 2 + (resBitlineMux + resGlobalBitline)
-								* (capGlobalBitline + capLocalBitline) / 2 + (resBitlineMux + resGlobalBitline
-										+ resLocalBitline) * capLocalBitline / 2;
-						writeLatency += 0.63 * tau;
-						if (cell->readMode == false) {	/* current-sensing */
-							/* Use ICCAD 2009 model */
-							resLocalBitline += mat.subarray.resMemCellOff;
-							tau = resGlobalBitline * capGlobalBitline / 2 *
-									(resLocalBitline + resGlobalBitline / 3) / (resLocalBitline + resGlobalBitline);
-							readLatency += 0.63 * tau;
-						} else {						/* voltage-sensing */
-							if (cell->readVoltage == 0) {  /* Current-in voltage sensing */
-								resLocalBitline += mat.subarray.resMemCellOn;
-								tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
-								latencyOn = tau * log((vPre - vOn)/(vPre - vOn - globalSenseAmp.senseVoltage));
-								resLocalBitline += cell->resistanceOff - cell->resistanceOn;
-								tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
-								latencyOff = tau * log((vOff - vPre)/(vOff - vPre - globalSenseAmp.senseVoltage));
-							} else {   /*Voltage-in voltage sensing */
-								resLocalBitline += mat.subarray.resEquivalentOn;
-								tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
-								latencyOn = tau * log((vPre - vOn)/(vPre - vOn - globalSenseAmp.senseVoltage));
-								resLocalBitline += mat.subarray.resEquivalentOff - mat.subarray.resEquivalentOn;
-								tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
-								latencyOff = tau * log((vOff - vPre)/(vOff - vPre - globalSenseAmp.senseVoltage));
-							}
-							readLatency -= mat.subarray.bitlineDelay;
-							if ((latencyOn + mat.subarray.bitlineDelayOn) > (latencyOff + mat.subarray.bitlineDelayOff))
-								readLatency += latencyOn + mat.subarray.bitlineDelayOn;
-							else
-								readLatency += latencyOff + mat.subarray.bitlineDelayOff;
+				/* double capGlobalBitlineMux;
+				capGlobalBitlineMux = globalBitlineMux.capForPreviousDelayCalculation; */
+				
+				double vWrite = MAX(fabs(cell->resetVoltage), fabs(cell->setVoltage));
+				double tau, latencyOff, latencyOn;
+				double vPre = mat.subarray.voltagePrecharge;
+				double vOn = mat.subarray.voltageMemCellOn;
+				double vOff = mat.subarray.voltageMemCellOff;
+				if (i == 0) {
+					tau = resBitlineMux * capGlobalBitline / 2 + (resBitlineMux + resGlobalBitline)
+							* (capGlobalBitline + capLocalBitline) / 2 + (resBitlineMux + resGlobalBitline
+									+ resLocalBitline) * capLocalBitline / 2;
+					writeLatency += 0.63 * tau;
+					if (cell->readMode == false) {	/* current-sensing */
+						/* Use ICCAD 2009 model */
+						resLocalBitline += mat.subarray.resMemCellOff;
+						tau = resGlobalBitline * capGlobalBitline / 2 *
+								(resLocalBitline + resGlobalBitline / 3) / (resLocalBitline + resGlobalBitline);
+						readLatency += 0.63 * tau;
+					} else {						/* voltage-sensing */
+						if (cell->readVoltage == 0) {  /* Current-in voltage sensing */
+							resLocalBitline += mat.subarray.resMemCellOn;
+							tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
+							latencyOn = tau * log((vPre - vOn)/(vPre - vOn - globalSenseAmp.senseVoltage));
+							resLocalBitline += cell->resistanceOff - cell->resistanceOn;
+							tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
+							latencyOff = tau * log((vOff - vPre)/(vOff - vPre - globalSenseAmp.senseVoltage));
+						} else {   /* Voltage-in voltage sensing */
+							resLocalBitline += mat.subarray.resEquivalentOn;
+							tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
+							latencyOn = tau * log((vPre - vOn)/(vPre - vOn - globalSenseAmp.senseVoltage));
+							resLocalBitline += mat.subarray.resEquivalentOff - mat.subarray.resEquivalentOn;
+							tau = resLocalBitline * capGlobalBitline + (resLocalBitline + resGlobalBitline) * capGlobalBitline / 2;
+							latencyOff = tau * log((vOff - vPre)/(vOff - vPre - globalSenseAmp.senseVoltage));
 						}
-					}
-					if (i <  numActiveMatPerColumn) {
-						energy = capGlobalBitline * tech->vdd * tech->vdd * numAddressBitRouteToMat;
-						readDynamicEnergy += energy;
-						writeDynamicEnergy += energy;
-						writeDynamicEnergy += capGlobalBitline * vWrite * vWrite * numDataBitRouteToMat;
-						if (cell->readMode) { /*Voltage-in voltage sensing */
-							readDynamicEnergy += capGlobalBitline * (vPre * vPre - vOn * vOn )* numDataBitRouteToMat;
-						}
+						readLatency -= mat.subarray.bitlineDelay;
+						if ((latencyOn + mat.subarray.bitlineDelayOn) > (latencyOff + mat.subarray.bitlineDelayOff))
+							readLatency += latencyOn + mat.subarray.bitlineDelayOn;
+						else
+							readLatency += latencyOff + mat.subarray.bitlineDelayOff;
 					}
 				}
-
+				if (i < numActiveMatPerColumn) {
+					energy = capGlobalBitline * tech->vdd * tech->vdd * numAddressBitRouteToMat;
+					readDynamicEnergy += energy;
+					writeDynamicEnergy += energy;
+					writeDynamicEnergy += capGlobalBitline * vWrite * vWrite * numDataBitRouteToMat;
+					if (cell->readMode) { /*Voltage-in voltage sensing */
+						readDynamicEnergy += capGlobalBitline * (vPre * vPre - vOn * vOn )* numDataBitRouteToMat;
+					}
+				}
 			}
 		}
 		if (!internalSenseAmp) {

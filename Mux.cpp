@@ -64,18 +64,14 @@ void Mux::Initialize(int _numInput, long long _numMux, double _capLoad, double _
 
 	if ((numInput > 1) && (numMux > 0 )) {
 		double minNMOSWidth = minDriverCurrent / tech->currentOnNmos[inputParameter->temperature - 300];
-		if (cell->memCellType == MRAM || cell->memCellType == PCRAM || cell->memCellType == memristor) {
-			/* Mux resistance should be small enough for voltage dividing */
-			double maxResNMOSPassTransistor = cell->resistanceOn * IR_DROP_TOLERANCE;
-	    	widthNMOSPassTransistor = CalculateOnResistance(tech->featureSize, NMOS, inputParameter->temperature, *tech)
-					* tech->featureSize / maxResNMOSPassTransistor;
-	    	if (widthNMOSPassTransistor > inputParameter->maxNmosSize * tech->featureSize) {	// Change the transistor size to avoid severe IR drop
-	    		widthNMOSPassTransistor = inputParameter->maxNmosSize * tech->featureSize;
-	    	}
-			widthNMOSPassTransistor = MAX(MAX(widthNMOSPassTransistor,minNMOSWidth), 6 * MIN_NMOS_SIZE * tech->featureSize);
-		} else {
-			widthNMOSPassTransistor = MAX(6 * MIN_NMOS_SIZE * tech->featureSize, minNMOSWidth);
+		/* Mux resistance should be small enough for voltage dividing */
+		double maxResNMOSPassTransistor = cell->resistanceOn * IR_DROP_TOLERANCE;
+		widthNMOSPassTransistor = CalculateOnResistance(tech->featureSize, NMOS, inputParameter->temperature, *tech)
+				* tech->featureSize / maxResNMOSPassTransistor;
+		if (widthNMOSPassTransistor > inputParameter->maxNmosSize * tech->featureSize) {	// Change the transistor size to avoid severe IR drop
+			widthNMOSPassTransistor = inputParameter->maxNmosSize * tech->featureSize;
 		}
+		widthNMOSPassTransistor = MAX(MAX(widthNMOSPassTransistor,minNMOSWidth), 6 * MIN_NMOS_SIZE * tech->featureSize);
 	}
 
 	initialized = true;
@@ -101,7 +97,7 @@ void Mux::CalculateRC() {
 	if (!initialized) {
 		cout << "[Mux] Error: Require initialization first!" << endl;
 	} else {
-		if ((numInput > 1) && (numMux > 0 )) {
+		if ((numInput > 1) && (numMux > 0)) {
 			capNMOSPassTransistor = CalculateDrainCap(widthNMOSPassTransistor, NMOS, tech->featureSize*40, *tech);
 			capForPreviousPowerCalculation = capNMOSPassTransistor;
 			capOutput = numInput * capNMOSPassTransistor;
@@ -117,7 +113,7 @@ void Mux::CalculateLatency(double _rampInput) {  //rampInput is actually useless
 	if (!initialized) {
 		cout << "[Mux] Error: Require initialization first!" << endl;
 	} else {
-		if ((numInput > 1) && (numMux > 0 )) {
+		if ((numInput > 1) && (numMux > 0)) {
 			rampInput = _rampInput;
 			double tr;
 			tr = resNMOSPassTransistor * (capOutput + capLoad);

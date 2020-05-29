@@ -55,13 +55,11 @@ public:
 	/* Functions */
 	void ReadCellFromFile(const std::string & inputFile);
 	void CellScaling(int _targetProcessNode);
-	double GetMemristance(double _relativeReadVoltage);  /* Get the LRS resistance of memristor at log-linera region of I-V curve */
 	void CalculateWriteEnergy();
 	double CalculateReadPower();
 	void PrintCell();
 
 	/* Properties */
-	MemCellType memCellType;	/* Memory cell type (like MRAM, PCRAM, etc.) */
 	int processNode;        /* Cell original process technology node, Unit: nm*/
 	double area;			/* Cell area, Unit: F^2 */
 	double aspectRatio;		/* Cell aspect ratio, H/W */
@@ -75,7 +73,7 @@ public:
 	double readVoltage;		/* Read voltage */
 	double readCurrent;		/* Read current */
 	double minSenseVoltage; /* Minimum sense voltage */
-        double wordlineBoostRatio; /*TO-DO: function not realized: ratio of boost wordline voltage to vdd */
+    double wordlineBoostRatio; /*TO-DO: function not realized: ratio of boost wordline voltage to vdd */
 	double readPower;       /* Read power per bitline (uW)*/
 	bool   resetMode;		/* true = voltage-mode, false = current-mode */
 	double resetVoltage;	/* Reset voltage */
@@ -99,26 +97,6 @@ public:
 	double capDRAMCell;		/* The DRAM cell capacitance if the memory cell is DRAM, Unit: F */
 	double widthSRAMCellNMOS;	/* The gate width of NMOS in SRAM cells, Unit: F */
 	double widthSRAMCellPMOS;	/* The gate width of PMOS in SRAM cells, Unit: F */
-
-	/* For memristor */
-	bool readFloating;      /* If unselected wordlines/bitlines are floating to reduce total leakage */
-	double resistanceOnAtSetVoltage; /* Low resistance state when set voltage is applied */
-	double resistanceOffAtSetVoltage; /* High resistance state when set voltage is applied */
-	double resistanceOnAtResetVoltage; /* Low resistance state when reset voltage is applied */
-	double resistanceOffAtResetVoltage; /* High resistance state when reset voltage is applied */
-	double resistanceOnAtReadVoltage; /* Low resistance state when read voltage is applied */
-	double resistanceOffAtReadVoltage; /* High resistance state when read voltage is applied */
-	double resistanceOnAtHalfReadVoltage; /* Low resistance state when 1/2 read voltage is applied */
-	double resistanceOffAtHalfReadVoltage; /* High resistance state when 1/2 read voltage is applied */
-	double resistanceOnAtHalfResetVoltage; /* Low resistance state when 1/2 reset voltage is applied */
-
-	/* For NAND flash */
-	double flashEraseVoltage;		/* The erase voltage, Unit: V, highest W/E voltage in ITRS sheet */
-	double flashPassVoltage;		/* The voltage applied on the unselected wordline within the same block during programming, Unit: V */
-	double flashProgramVoltage;		/* The program voltage, Unit: V */
-	double flashEraseTime;			/* The flash erase time, Unit: s */
-	double flashProgramTime;		/* The SLC flash program time, Unit: s */
-	double gateCouplingRatio;		/* The ratio of control gate to total floating gate capacitance */
 };
 
 #endif /* MEMCELL_H_ */
